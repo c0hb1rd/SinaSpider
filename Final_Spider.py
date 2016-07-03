@@ -31,7 +31,7 @@ sys.setdefaultencoding('utf-8')
 
 # HTTP Request Header
 HEADERS = {
-    'Cookie':'_T_WM=1867af942c92a23704b094e55fbbfadb; ALF=1470016285; SCF=AlU6pua4h8VAFCCSWk9ptfy9a56Wr8cfJw4pGFS5IKhEm_2HWqf9Qg8D6Wi2jQ3MhTN5luzifKYsq4ZbbALWGD0.; SUB=_2A256fMlvDeTxGeNK71UZ8CfLyj6IHXVZntcnrDV6PUNbktANLW2nkW1WRKGoyuGFLyILiETsh5IOw48dUA..; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9WWlXurN77AppfK3I6VNbye25JpX5KMhUgL.Fo-XShMReh.NeKz2dJLoI7UoesybePi.; SUHB=0k1yTQu_RVkCTM; SSOLoginState=1467529535; gsid_CTandWM=4uwFCpOz5G94piRyvJy9qmRdTbu; M_WEIBOCN_PARAMS=featurecode%3D20000181%26luicode%3D10000011%26lfid%3D103003index1075567392%26fid%3D103003index1075567392_-_photo_all_l%26uicode%3D10000012'
+    'Cookie':''
 }
 
 # Get User Image Links, Return A List
