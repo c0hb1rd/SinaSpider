@@ -37,7 +37,7 @@ HEADERS = {
 # Cookie For Get User Information
 HEADERS_FOR_GET_INFO = {
     'Cookie':''
-
+}
 
 # Get User Image Links, Return List
 def getImageLinks(uid, page, headers=HEADERS):
