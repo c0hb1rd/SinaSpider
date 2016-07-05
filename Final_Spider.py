@@ -122,7 +122,7 @@ def getUserInformation(uid, headers=HEADERS_FOR_GET_INFO):
     reponse = requests.get(url, headers=HEADERS_FOR_GET_INFO)
     reponse.close()
 
-    content = BeautifulSoup(reponse.content.replace("\\", '').replace("rn", ""), "lxml")
+    content = BeautifulSoup(reponse.content.replace("\\", '').replace("rn", ""), "html.parser")
     content = content.find_all('div', 'item-info-page')
 
     info = {}
@@ -146,7 +146,7 @@ def showImage(w_title, path, delay=2000):
     image = ''
     # Loads Image From URL
     if path[:7] == 'http://':
-        rep = requests.get(url, stream=True)
+        rep = requests.get(path, stream=True)
         image = numpy.asarray(bytearray(rep.content), dtype='uint8')
         image = cv2.imdecode(image, cv2.IMREAD_COLOR)
     # Loads Image From Disk
@@ -181,12 +181,13 @@ def main(uid):
         # Detect Images whether Has Faces And Then Save It To Disk
         count = 1
         for link in imgLinks:
-            filename = str(count) + '.jpg'
+            filename = 'Sina_' + str(uid) + '_' + str(count) + '.jpg'
             # print '[*]Downloading ' + link + '......'
             downloadImage(link, path, filename)
             # print '[*]Downloaded ' + link
             if detectFaces(path + filename):
-                showImage(str(uid), path + filename)
+                #showImage("Found Faces", path + filename)
+                print '[*]Found Faces', uid
             else:
                 os.system('rm ' + path + filename)
             count += 1
@@ -208,6 +209,4 @@ def main(uid):
 # 1000000002 Fans Smallter Than 10
 ## End
 if __name__ == '__main__':
-    uidList = [1075567392, 1774543811, 5447809712, 1000000000, 1000000002]
-    for uid in uidList:
-        main(uid)
+    main(int(sys.argv[1]))
