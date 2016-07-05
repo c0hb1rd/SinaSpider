@@ -155,7 +155,7 @@ def showImage(w_title, url):
     image = numpy.asarray(bytearray(rep.content), dtype='uint8')
     image = cv2.imdecode(image, cv2.IMREAD_COLOR)
     cv2.imshow("Image", image)
-    cv2.waitKey(delay=3000)
+    cv2.waitKey(delay=2000)
 
 # 1075567392
 # 1774543811
