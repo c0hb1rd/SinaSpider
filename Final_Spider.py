@@ -21,7 +21,7 @@ import json
 # http://m.weibo.cn/users/|-*-UserID-*-|?retcode=6102, e.g: 1075567392
 ## End
 
-## Url For Get User Fans, JSON Page
+## URL For Get User Fans, JSON Page
 # http://m.weibo.cn/page/card?itemid=100505|-*-UserID-*-|_-_WEIBO_INDEX_PROFILE_APPS&callback=_1467532491343_4&retcode=6102, e.g: 1075567392
 ## End
 
@@ -63,10 +63,10 @@ def getImageLinks(uid, page, headers=HEADERS):
 
 
 # Download Image
-def downloadImage(imgUrl, path, filename):
+def downloadImage(imgURL, path, filename):
     while True:
         try:
-            reponse = requests.get(imgUrl, stream=True)
+            reponse = requests.get(imgURL, stream=True)
             with open(path + filename, 'wb') as f:
                 for buff in reponse.iter_content(chunk_size=1024):
                     if buff:
