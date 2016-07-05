@@ -7,8 +7,8 @@ import cv2
 from bs4 import BeautifulSoup
 import sys
 import json
+import time
 # import re as R
-# import time
 # import Image
 # from threading import Thread
 
@@ -29,18 +29,21 @@ import json
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-# Default Cookie
-HEADERS = {
-    'Cookie':''
-}
-
 # Cookie For Get User Information
 HEADERS_FOR_GET_INFO = {
-    'Cookie':''
+    'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Accept-Encoding':'gzip, deflate, sdch',
+    'Accept-Language':'zh-CN,zh;q=0.8',
+    'Cache-Control':'max-age=0',
+    'Connection':'keep-alive',
+    'Cookie':'',
+    'Host':'m.weibo.cn',
+    'Upgrade-Insecure-Requests':'1',
+    'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36'
 }
 
 # Get User Image Links, Return List
-def getImageLinks(uid, page, headers=HEADERS):
+def getImageLinks(uid, page, headers=HEADERS_FOR_GET_INFO):
     while True:
         try:
             imgLinks = []
@@ -53,6 +56,9 @@ def getImageLinks(uid, page, headers=HEADERS):
             if reponse:
                 content = reponse.content.replace('\\', '')
             data = json.loads(content)
+
+            if data['count'] < 2:
+                return None
 
             for src in data['cards'][0]['card_group'][0]['pics']:
                 imgLinks.append(src['pic_ori'].replace('large', 'thumb300')) # Large Type Picture is too Big
@@ -78,24 +84,28 @@ def downloadImage(imgURL, path, filename):
 
 
 # Get User Fans Total, Return Int
-def getUserFans(uid, headers=HEADERS):
-    url = "http://m.weibo.cn/page/card?itemid=100505%d_-_WEIBO_INDEX_PROFILE_APPS&callback=_1467532491343_4&retcode=6102" % uid
-    reponse = requests.get(url, headers=headers)
-    reponse.close()
+def getUserFans(uid, headers=HEADERS_FOR_GET_INFO):
+    while True:
+        try:
+            url = "http://m.weibo.cn/page/card?itemid=100505%d_-_WEIBO_INDEX_PROFILE_APPS&callback=_1467532491343_4&retcode=6102" % uid
+            reponse = requests.get(url, headers=headers)
+            reponse.close()
 
-    content = reponse.content.replace('\\', '')
-    data = json.loads(content[17:-1])
-    fans = data['apps'][3]['count'].split('u')
+            content = reponse.content.replace('\\', '')
+            data = json.loads(content[17:-1])
+            fans = data['apps'][3]['count'].split('u')
 
-    if len(fans) > 1:
-        if fans[1] == '4ebf':
-            totalFans = fans[0] + '00000000'
-            return int(totalFans)
-        elif fans[1] == '4e07':
-            totalFans = fans[0] + '0000'
-            return int(totalFans)
-    else:
-        return int(fans[0])
+            if len(fans) > 1:
+                if fans[1] == '4ebf':
+                    totalFans = fans[0] + '00000000'
+                    return int(totalFans)
+                elif fans[1] == '4e07':
+                    totalFans = fans[0] + '0000'
+                    return int(totalFans)
+            else:
+                return int(fans[0])
+        except:
+            continue
 
 
 # Detect Image whether Has Faces
@@ -160,39 +170,44 @@ def main(uid):
     userFans = getUserFans(uid)
     # If User Fans Greater Than 500, Run It!
     if userFans >= 500:
-        path = os.path.abspath('.') + '/Sina_' + str(uid) + '/'
-        if os.path.exists(path) != True:
-            os.mkdir(path)
-        else:
-            print '[*]User ' + str(uid) + " is exists."
-            return
-
-        information = getUserInformation(uid)
-        information['粉丝'] = userFans
+        print '[*]Starting get Image'
         imgLinks = getImageLinks(uid, 1)
-
-        # Save User Information To Disk
-        with open(path + 'userInfo.txt', 'w') as file:
-            for k, v in information.items():
-                line =  str(k) + ':' + str(v)
-                file.writelines(line + "\n")
-            file.close()
-
-        # Detect Images whether Has Faces And Then Save It To Disk
-        count = 1
-        for link in imgLinks:
-            filename = 'Sina_' + str(uid) + '_' + str(count) + '.jpg'
-            # print '[*]Downloading ' + link + '......'
-            downloadImage(link, path, filename)
-            # print '[*]Downloaded ' + link
-            if detectFaces(path + filename):
-                #showImage("Found Faces", path + filename)
-                print '[*]Found Faces', uid
+        print '[*]Get Iamge Completion'
+        if imgLinks != None:
+            path = os.path.abspath('.') + '/Sina_' + str(uid) + '/'
+            if os.path.exists(path) != True:
+                os.mkdir(path)
             else:
-                os.system('rm ' + path + filename)
-            count += 1
+                print '[*]User ' + str(uid) + " is exists."
+                return
 
-        print '[*]Process user ' + str(uid) + " completion."
+            information = getUserInformation(uid)
+            information['粉丝'] = userFans
+
+            # Save User Information To Disk
+            with open(path + 'userInfo.txt', 'w') as file:
+                for k, v in information.items():
+                    line =  str(k) + ':' + str(v)
+                    file.writelines(line + "\n")
+                file.close()
+
+            # Detect Images whether Has Faces And Then Save It To Disk
+            count = 1
+            for link in imgLinks:
+                filename = 'Sina_' + str(uid) + '_' + str(count) + '.jpg'
+                # print '[*]Downloading ' + link + '......'
+                downloadImage(link, path, filename)
+                # print '[*]Downloaded ' + link
+                if detectFaces(path + filename):
+                    #showImage("Found Faces", path + filename)
+                    print '[*]Found Faces', uid
+                else:
+                    os.system('rm ' + path + filename)
+                count += 1
+
+            print '[*]Process user ' + str(uid) + " completion."
+        else:
+            print "[*]User %d have not post any image." % uid
     else:
         print "[*]User %d fans smaller than 500." % uid
 
