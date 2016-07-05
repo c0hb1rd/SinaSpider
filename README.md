@@ -17,3 +17,14 @@ http://m.weibo.cn/page/card?itemid=100505|-*-UserID-*-|_-_WEIBO_INDEX_PROFILE_AP
 <li><b>Show Image</b>: showImage(w_title, path, delay=2000)</li>
 </ul>
 
+#Run it!
+<ul>
+<li>
+  <p>run script</p>
+  <img src="https://github.com/c0hb1rd/SinaSpider/blob/master/Image/1.png"/>
+</li>
+<li>
+  <p>show result</p>
+  <img src="https://github.com/c0hb1rd/SinaSpider/blob/master/Image/2.png"/>
+</li>
+<ul>
