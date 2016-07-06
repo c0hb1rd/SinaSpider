@@ -185,7 +185,7 @@ def main(uid):
             for k, v in information.items():
                 line =  str(k) + ':' + str(v)
                 file.writelines(line + "\n")
-                file.close()
+            file.close()
 
         print '[*]Starting get Image'
         imgLinks = getImageLinks(uid, 1)
