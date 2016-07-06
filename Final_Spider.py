@@ -57,7 +57,8 @@ def getImageLinks(uid, page, headers=HEADERS_FOR_GET_INFO):
                 content = reponse.content.replace('\\', '')
             data = json.loads(content)
 
-            if data['count'] < 2:
+            print data['count']
+            if data['count'] < 2 or data['count'] == '':
                 return None
 
             for src in data['cards'][0]['card_group'][0]['pics']:
@@ -170,27 +171,27 @@ def main(uid):
     userFans = getUserFans(uid)
     # If User Fans Greater Than 500, Run It!
     if userFans >= 500:
+        path = os.path.abspath('.') + '/Sina_' + str(uid) + '/'
+        if os.path.exists(path) != True:
+            os.mkdir(path)
+        else:
+            print '[*]User ' + str(uid) + " is exists."
+            return
+
+        # Save User Information To Disk
+        information = getUserInformation(uid)
+        information['粉丝'] = userFans
+        with open(path + 'userInfo.txt', 'w') as file:
+            for k, v in information.items():
+                line =  str(k) + ':' + str(v)
+                file.writelines(line + "\n")
+                file.close()
+
         print '[*]Starting get Image'
         imgLinks = getImageLinks(uid, 1)
         print '[*]Get Iamge Completion'
+
         if imgLinks != None:
-            path = os.path.abspath('.') + '/Sina_' + str(uid) + '/'
-            if os.path.exists(path) != True:
-                os.mkdir(path)
-            else:
-                print '[*]User ' + str(uid) + " is exists."
-                return
-
-            information = getUserInformation(uid)
-            information['粉丝'] = userFans
-
-            # Save User Information To Disk
-            with open(path + 'userInfo.txt', 'w') as file:
-                for k, v in information.items():
-                    line =  str(k) + ':' + str(v)
-                    file.writelines(line + "\n")
-                file.close()
-
             # Detect Images whether Has Faces And Then Save It To Disk
             count = 1
             for link in imgLinks:
@@ -224,4 +225,6 @@ def main(uid):
 # 1000000002 Fans Smallter Than 10
 ## End
 if __name__ == '__main__':
-    main(int(sys.argv[1]))
+    for uid in range(1000007635, 1000020001):
+        main(uid)
+        time.sleep(8)
